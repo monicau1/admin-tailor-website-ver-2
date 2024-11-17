@@ -1,0 +1,214 @@
+<!-- views/kategori-pakaian/kategori-pakaian.ejs -->
+<div class="content flex-grow-1">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Kategori Pakaian</h2>
+    <div>
+      <button
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#addKategoriModal"
+      >
+        + Tambah Kategori
+      </button>
+    </div>
+  </div>
+
+  <!-- Alert untuk notifikasi -->
+  <div id="alertContainer"></div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex justify-content-between mb-3">
+        <div class="d-flex gap-2" style="width: 300px">
+          <!-- Search Input -->
+          <div class="input-group">
+            <input
+              type="text"
+              id="searchInput"
+              class="form-control"
+              placeholder="Cari kategori..."
+              value="<%= query.search %>"
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              id="searchButton"
+            >
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nama Kategori</th>
+              <th>Deskripsi</th>
+              <th>Jumlah Produk</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="kategoriTableBody">
+            <% if(kategoriList.length > 0) { %> <%
+            kategoriList.forEach((kategori, index) => { %>
+            <tr data-id="<%= kategori.id_kategori %>">
+              <td>
+                <%= (pagination.current_page - 1) * pagination.items_per_page +
+                index + 1 %>
+              </td>
+              <td><%= kategori.nama_kategori %></td>
+              <td><%= kategori.deskripsi || '-' %></td>
+              <td><%= kategori.jumlah_produk %></td>
+              <td>
+                <div class="btn-group">
+                  <button
+                    class="btn btn-outline-primary btn-sm"
+                    onclick="editKategori('<%= kategori.id_kategori %>', '<%= kategori.nama_kategori %>', '<%= kategori.deskripsi %>')"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-danger btn-sm"
+                    onclick="deleteKategori('<%= kategori.id_kategori %>', '<%= kategori.jumlah_produk %>')"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <% }); %> <% } else { %>
+            <tr>
+              <td colspan="5" class="text-center">
+                Tidak ada kategori tersedia
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <nav>
+          <ul class="pagination mb-0">
+            <% for(let i = 1; i <= pagination.total_pages; i++) { %>
+            <li
+              class="page-item <%= pagination.current_page === i ? 'active' : '' %>"
+            >
+              <button class="page-link" onclick="changePage('<%= i %>')">
+                <%= i %>
+              </button>
+            </li>
+            <% } %>
+          </ul>
+        </nav>
+        <div><%= pagination.total_items %> Hasil</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah Kategori -->
+<div class="modal fade" id="addKategoriModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tambah Kategori</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="kategoriForm">
+          <div class="mb-3">
+            <label for="namaKategori" class="form-label">Nama Kategori*</label>
+            <input
+              type="text"
+              class="form-control"
+              id="namaKategori"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="deskripsiKategori" class="form-label">Deskripsi</label>
+            <textarea
+              class="form-control"
+              id="deskripsiKategori"
+              rows="3"
+            ></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Batal
+        </button>
+        <button type="button" class="btn btn-primary" onclick="saveKategori()">
+          Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Edit Kategori -->
+<div class="modal fade" id="editKategoriModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Kategori</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="editKategoriForm">
+          <input type="hidden" id="editKategoriId" />
+          <div class="mb-3">
+            <label for="editNamaKategori" class="form-label"
+              >Nama Kategori*</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="editNamaKategori"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="editDeskripsiKategori" class="form-label"
+              >Deskripsi</label
+            >
+            <textarea
+              class="form-control"
+              id="editDeskripsiKategori"
+              rows="3"
+            ></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Batal
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="updateKategori()"
+        >
+          Simpan Perubahan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script untuk halaman ini -->
+<%- contentFor('scripts') %>
+<script src="/js/kategori-pakaian/index.js"></script>

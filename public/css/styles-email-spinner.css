@@ -1,0 +1,15 @@
+/* Tambahkan di styles.css */
+.email-checking {
+  position: relative;
+}
+
+.email-checking .spinner-border {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.is-invalid ~ .spinner-border {
+  display: none;
+}

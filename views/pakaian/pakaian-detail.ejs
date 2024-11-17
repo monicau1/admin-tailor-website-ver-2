@@ -1,0 +1,245 @@
+<!-- views/pakaian/pakaian-detail.ejs -->
+<div class="content flex-grow-1">
+  <div class="container">
+    <div class="header mb-4">
+      <a href="/admin/pakaian" class="text-decoration-none">
+        <i class="fas fa-arrow-left"></i> Back to Products
+      </a>
+      <h1 class="mt-2">Edit Product</h1>
+    </div>
+
+    <!-- Form informasi dasar produk -->
+    <form id="productForm">
+      <input type="hidden" id="productId" value="<%= produk.id_pakaian %>">
+      
+      <div class="form-section card mb-4">
+        <div class="card-body">
+          <h2 class="card-title">Basic Information</h2>
+
+          <div class="mb-3">
+            <label for="productName" class="form-label">Product Name*</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="productName" 
+              required 
+              value="<%= produk.nama_pakaian %>"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="productDescription" class="form-label">Product Description</label>
+            <textarea 
+              class="form-control" 
+              id="productDescription" 
+              rows="3"
+            ><%= produk.deskripsi_pakaian %></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="productPrice" class="form-label">Product Price*</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="productPrice" 
+              required 
+              step="0.01"
+              value="<%= produk.harga %>"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="category" class="form-label">Category*</label>
+            <select class="form-control" id="category" required>
+              <option value="" disabled>Select Category</option>
+              <% kategoriList.forEach(function(kategori) { %>
+                <option 
+                  value="<%= kategori.id_kategori_pakaian %>"
+                  <%= produk.kategori.id_kategori_pakaian === kategori.id_kategori_pakaian ? 'selected' : '' %>
+                >
+                  <%= kategori.nama_kategori_pakaian %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="weight" class="form-label">Weight (in grams)</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="weight" 
+              step="0.01"
+              value="<%= produk.berat %>"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-control" id="status">
+              <option value="active" <%= produk.status_produk === 'active' ? 'selected' : '' %>>Active</option>
+              <option value="inactive" <%= produk.status_produk === 'inactive' ? 'selected' : '' %>>Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tombol Submit -->
+      <div class="d-flex justify-content-end mb-4">
+        <button type="button" class="btn btn-danger me-2" id="deleteProduct">Delete Product</button>
+        <a href="/admin/pakaian" class="btn btn-secondary me-2">Cancel</a>
+        <button type="submit" class="btn btn-primary">Update Product</button>
+      </div>
+    </form>
+
+<!-- Area Upload Gambar -->
+<div class="card mb-4">
+  <div class="card-body">
+    <h2 class="card-title">Gambar Produk</h2>
+    
+    <!-- Preview area -->
+    <div class="row mb-3" id="imagePreviewContainer">
+      <% if (produk && produk.gambar_pakaian && produk.gambar_pakaian.length > 0) { %>
+        <% produk.gambar_pakaian.forEach(function(gambar) { %>
+          <div class="col-md-3 mb-3">
+            <div class="position-relative">
+              <div class="image-container" style="height: 200px; overflow: hidden;">
+                <img 
+                  src="/images/pakaian/<%= gambar.nama_file %>" 
+                  class="img-thumbnail w-100 h-100" 
+                  alt="<%= produk.nama_pakaian %>"
+                  style="object-fit: cover;"
+                >
+              </div>
+              <div class="position-absolute top-0 end-0 p-2">
+                <button 
+                  type="button" 
+                  class="btn btn-danger btn-sm" 
+                  onclick="deleteImage('<%= gambar.id_gambar %>')"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <div class="mt-2">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    name="primary_image" 
+                    value="<%= gambar.id_gambar %>" 
+                    <%= gambar.is_primary ? 'checked' : '' %>
+                    onchange="setPrimaryImage('<%= gambar.id_gambar %>')"
+                  >
+                  <label class="form-check-label">
+                    Gambar Utama
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+
+    <!-- Upload form -->
+    <form id="imageUploadForm" class="mb-3">
+      <div class="input-group">
+        <input 
+          type="file" 
+          class="form-control" 
+          id="productImages" 
+          name="images" 
+          multiple 
+          accept="image/*"
+        >
+        <button class="btn btn-outline-secondary" type="submit">
+          Upload
+        </button>
+      </div>
+      <small class="text-muted">Format: JPG, PNG, atau WEBP. Maksimal 5MB per file.</small>
+    </form>
+
+    <!-- Progress bar -->
+    <div class="progress d-none" id="uploadProgress">
+      <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+    </div>
+  </div>
+</div>
+<!-- akhir gambar -->
+ 
+    <!-- Tabel varian -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <h2 class="card-title">Product Variants</h2>
+        <div class="table-responsive">
+          <table class="table" id="variantTable">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Size</th>
+                <th>Color</th>
+                <th>Stock</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% produk.varian_pakaian.forEach((varian, index) => { %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= varian.ukuran %></td>
+                  <td><%= varian.warna %></td>
+                  <td><%= varian.stok %></td>
+                  <td>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeVariant(<%= index %>)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form tambah varian -->
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title">Add New Variant</h3>
+        <form id="variantForm" class="row g-3">
+          <div class="col-md-3">
+            <label for="variantSize" class="form-label">Size*</label>
+            <select class="form-control" id="variantSize" required>
+              <option value="" selected disabled>Select Size</option>
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+              <option value="XXL">XXL</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label for="variantColor" class="form-label">Color*</label>
+            <input type="text" class="form-control" id="variantColor" required />
+          </div>
+
+          <div class="col-md-3">
+            <label for="variantStock" class="form-label">Stock*</label>
+            <input type="number" class="form-control" id="variantStock" min="0" required />
+          </div>
+
+          <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-success">Add Variant</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- pakaian-detail.ejs -->
+<%- contentFor('scripts') %>
+<script src="/js/pakaian/detail.js"></script>
+<script src="/js/pakaian/image.js"></script>

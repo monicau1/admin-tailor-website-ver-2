@@ -1,0 +1,24 @@
+<!-- views/error.ejs -->
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body text-center">
+          <h3 class="text-danger mb-4">
+            <i class="fas fa-exclamation-triangle"></i> Error
+          </h3>
+          <p class="mb-3"><%= message %></p>
+          <% if (typeof error !== 'undefined' && error &&
+          Object.keys(error).length > 0) { %>
+          <div class="alert alert-danger">
+            <pre class="mb-0"><%= JSON.stringify(error, null, 2) %></pre>
+          </div>
+          <% } %>
+          <a href="javascript:history.back()" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Kembali
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,230 @@
+<!-- views/partials/layout.ejs -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      <%= typeof title !== 'undefined' ? title : 'Tailor Dashboard' %>
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/sidebar-styles.css" />
+    <link rel="stylesheet" href="/css/styles-email-spinner.css" />
+    <%- defineContent('styles') %>
+  </head>
+
+  <body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar fixed-top">
+      <div class="d-flex align-items-center">
+        <button class="toggle-sidebar me-2">
+          <i class="fas fa-bars text-white"></i>
+        </button>
+        <a
+          class="navbar-brand d-flex align-items-center"
+          href="/admin/dashboard"
+        >
+          <span class="text-white ms-2">Tailor Dashboard</span>
+        </a>
+      </div>
+      <div class="navbar-right">
+        <div class="nav-item text-white">
+          <i class="fas fa-bell"></i>
+        </div>
+        <div class="nav-item d-flex align-items-center text-white">
+          <span class="ms-2 d-none d-md-inline">Admin</span>
+          <i class="fas fa-user-circle ms-2"></i>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Dashboard -->
+      <a
+        href="/admin/dashboard"
+        class="<%= path === '/admin/dashboard' ? 'active' : '' %>"
+      >
+        <i class="fas fa-home"></i>
+        <span class="ms-2">Dashboard</span>
+      </a>
+
+      <!-- Produk Group -->
+      <div class="sidebar-group">
+        <div class="sidebar-header">
+          <span class="text-muted text-uppercase small ps-3">Produk</span>
+        </div>
+        <a
+          href="/admin/pakaian"
+          class="<%= path === '/admin/pakaian' ? 'active' : '' %>"
+        >
+          <i class="fas fa-tshirt"></i>
+          <span class="ms-2">Pakaian</span>
+        </a>
+        <a
+          href="/admin/kategori/pakaian"
+          class="<%= path === '/admin/kategori/pakaian' ? 'active' : '' %>"
+        >
+          <i class="fas fa-tags"></i>
+          <span class="ms-2">Kategori Pakaian</span>
+        </a>
+      </div>
+
+      <!-- Layanan Group -->
+      <div class="sidebar-group">
+        <div class="sidebar-header">
+          <span class="text-muted text-uppercase small ps-3">Layanan</span>
+        </div>
+        <a
+          href="/admin/permak"
+          class="<%= path === '/admin/permak' ? 'active' : '' %>"
+        >
+          <i class="fas fa-cut"></i>
+          <span class="ms-2">Jenis Permak</span>
+        </a>
+        <a
+          href="/admin/kategori/permak"
+          class="<%= path === '/admin/kategori/permak' ? 'active' : '' %>"
+        >
+          <i class="fas fa-list"></i>
+          <span class="ms-2">Kategori Permak</span>
+        </a>
+      </div>
+
+      <!-- Pesanan Group -->
+      <div class="sidebar-group">
+        <div class="sidebar-header">
+          <span class="text-muted text-uppercase small ps-3">Pesanan</span>
+        </div>
+
+        <a
+          href="/admin/pesanan"
+          class="<%= path === '/admin/pesanan' ? 'active' : '' %>"
+        >
+          <i class="fas fa-clipboard-list"></i>
+          <span class="ms-2">Pesanan</span>
+        </a>
+      </div>
+
+      <!-- Pengguna Group -->
+      <div class="sidebar-group">
+        <div class="sidebar-header">
+          <span class="text-muted text-uppercase small ps-3">Pengguna</span>
+        </div>
+        <a
+          href="/admin/pelanggan"
+          class="<%= path === '/admin/pelanggan' ? 'active' : '' %>"
+        >
+          <i class="fas fa-users"></i>
+          <span class="ms-2">Pelanggan</span>
+        </a>
+        <a
+          href="/admin/pegawai"
+          class="<%= path === '/admin/pegawai' ? 'active' : '' %>"
+        >
+          <i class="fas fa-user-tie"></i>
+          <span class="ms-2">Pegawai</span>
+        </a>
+      </div>
+
+      <!-- Laporan -->
+      <!-- <div class="sidebar-group">
+        <div class="sidebar-header">
+          <span class="text-muted text-uppercase small ps-3">Laporan</span>
+        </div>
+        <a
+          href="/laporan/penjualan"
+          class="<%= path === '/laporan/penjualan' ? 'active' : '' %>"
+        >
+          <i class="fas fa-chart-bar"></i>
+          <span class="ms-2">Laporan Penjualan</span>
+        </a>
+        <a
+          href="/laporan/permak"
+          class="<%= path === '/laporan/permak' ? 'active' : '' %>"
+        >
+          <i class="fas fa-chart-line"></i>
+          <span class="ms-2">Laporan Permak</span>
+        </a>
+      </div> -->
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+      <!-- Alert Messages -->
+      <% if (typeof messages !== 'undefined') { %> <% if (messages.success) { %>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= messages.success %>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      <% } %> <% if (messages.error) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= messages.error %>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      <% } %> <% } %>
+
+      <!-- Dynamic Content -->
+      <%- body %>
+    </div>
+
+    <!-- Scripts -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <%- defineContent('scripts') %>
+
+    <!-- Sidebar Toggle Script -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggleButton = document.querySelector(".toggle-sidebar");
+        const sidebar = document.querySelector(".sidebar");
+        const content = document.querySelector(".content");
+        const isMobile = window.innerWidth <= 768;
+
+        // Set initial state on mobile
+        if (isMobile) {
+          sidebar.classList.add("collapsed");
+          content.classList.add("expanded");
+        }
+
+        toggleButton.addEventListener("click", function () {
+          sidebar.classList.toggle("collapsed");
+          content.classList.toggle("expanded");
+        });
+
+        // Close sidebar when clicking outside on mobile
+        if (isMobile) {
+          document.addEventListener("click", function (e) {
+            if (
+              !sidebar.contains(e.target) &&
+              !toggleButton.contains(e.target)
+            ) {
+              sidebar.classList.add("collapsed");
+              content.classList.add("expanded");
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

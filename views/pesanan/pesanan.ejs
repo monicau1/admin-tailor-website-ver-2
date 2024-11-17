@@ -1,0 +1,307 @@
+<!-- views/pesanan/pesanan.ejs -->
+<div class="content flex-grow-1">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Daftar Pesanan</h2>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary">
+        <i class="fas fa-file-export me-1"></i> Export
+      </button>
+      <div class="dropdown">
+        <button
+          class="btn btn-primary dropdown-toggle"
+          type="button"
+          data-bs-toggle="dropdown"
+        >
+          <i class="fas fa-plus me-1"></i> Tambah Pesanan
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <a class="dropdown-item" href="/admin/pesanan/permak/create">
+              <i class="fas fa-cut me-1"></i> Pesanan Permak
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="/admin/pesanan/pakaian/create">
+              <i class="fas fa-tshirt me-1"></i> Pesanan Jahit
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter dan Pencarian -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-2">
+      <select class="form-select" id="filterStatus">
+        <option value="">Semua Status</option>
+        <option value="pending">Menunggu Konfirmasi</option>
+        <option value="process">Dalam Proses</option>
+        <option value="ready">Siap Kirim</option>
+        <option value="completed">Selesai</option>
+      </select>
+    </div>
+
+    <div class="col-md-2">
+      <select class="form-select" id="filterPenjahit">
+        <option value="">Semua Penjahit</option>
+        <% penjahitList.forEach(function(penjahit) { %>
+        <option value="<%= penjahit.id_pegawai %>">
+          <%= penjahit.nama_pegawai %>
+        </option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control"
+          id="searchInput"
+          placeholder="Cari pesanan..."
+        />
+        <button class="btn btn-outline-secondary" type="button">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="input-group">
+        <input type="date" class="form-control" id="startDate" />
+        <span class="input-group-text">s/d</span>
+        <input type="date" class="form-control" id="endDate" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Navigasi -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link active" href="#semua" data-bs-toggle="tab">
+        Semua Pesanan
+        <span class="badge bg-secondary ms-2"><%= totalPesanan %></span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#permak" data-bs-toggle="tab">
+        Pesanan Permak
+        <span class="badge bg-secondary ms-2"><%= totalPermak %></span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#jahit" data-bs-toggle="tab">
+        Pesanan Jahit
+        <span class="badge bg-secondary ms-2"><%= totalJahit %></span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- Konten Tab -->
+  <div class="tab-content">
+    <!-- Tab Semua Pesanan -->
+    <div class="tab-pane fade show active" id="semua">
+      <div class="card">
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>ID Pesanan</th>
+                <th>Tanggal</th>
+                <th>Pelanggan</th>
+                <th>Jenis</th>
+                <th>Item</th>
+                <th>Penjahit</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (pesananList.length > 0) { %> <%
+              pesananList.forEach(function(pesanan) { %>
+              <tr>
+                <td>
+                  #<%= pesanan.id_pesanan %><br />
+                  <small class="text-muted"
+                    ><%= formatTime(pesanan.tanggal_pesanan) %></small
+                  >
+                </td>
+                <td><%= formatDate(pesanan.tanggal_pesanan) %></td>
+                <td>
+                  <%= pesanan.pelanggan.nama_pelanggan %><br />
+                  <small class="text-muted"
+                    ><%= pesanan.pelanggan.nomor_telepon_pelanggan %></small
+                  >
+                </td>
+                <td>
+                  <% if (pesanan.jenis_pesanan === 'permak') { %>
+                  <span class="badge bg-info">Permak</span>
+                  <% } else { %>
+                  <span class="badge bg-primary">Jahit</span>
+                  <% } %>
+                </td>
+                <td>
+                  <%= pesanan.item_pertama %><br />
+                  <small class="text-muted">
+                    <%= pesanan.jenis_pesanan === 'permak' ? 'Permak' : 'Jahit'
+                    %> (<%= pesanan.jumlah_item %> item)
+                  </small>
+                </td>
+                <td><%= pesanan.penjahit?.nama_pegawai || '-' %></td>
+                <td>
+                  <% let statusClass = { 'pending': 'bg-warning', 'process':
+                  'bg-info', 'ready': 'bg-primary', 'completed': 'bg-success' }
+                  %>
+                  <span class="badge <%= statusClass[pesanan.status] %>">
+                    <%= formatStatus(pesanan.status) %>
+                  </span>
+                </td>
+                <td class="text-end">
+                  Rp <%= formatNumber(pesanan.jumlah_total) %>
+                </td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <a
+                      href="/admin/pesanan/<%= pesanan.id_pesanan %>"
+                      class="btn btn-outline-primary"
+                    >
+                      <i class="fas fa-eye"></i>
+                    </a>
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      data-bs-toggle="dropdown"
+                    >
+                      <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a
+                          class="dropdown-item"
+                          href="#"
+                          onclick="updateStatus('<%= pesanan.id_pesanan %>')"
+                        >
+                          <i class="fas fa-edit me-1"></i>
+                          Update Status
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          class="dropdown-item"
+                          href="#"
+                          onclick="printInvoice('<%= pesanan.id_pesanan %>')"
+                        >
+                          <i class="fas fa-print me-1"></i>
+                          Cetak Invoice
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <% }); %> <% } else { %>
+              <tr>
+                <td colspan="9" class="text-center py-4">
+                  Tidak ada pesanan yang tersedia
+                </td>
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="card-footer">
+          <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+              Menampilkan <%= ((pagination.current_page - 1) *
+              pagination.items_per_page) + 1 %> - <%=
+              Math.min(pagination.current_page * pagination.items_per_page,
+              pagination.total_items) %> dari <%= pagination.total_items %>
+              pesanan
+            </small>
+
+            <nav>
+              <ul class="pagination pagination-sm mb-0">
+                <% for(let i = 1; i <= pagination.total_pages; i++) { %>
+                <li
+                  class="page-item <%= pagination.current_page === i ? 'active' : '' %>"
+                >
+                  <button class="page-link" onclick="changePage('<%= i %>')">
+                    <%= i %>
+                  </button>
+                </li>
+                <% } %>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Pesanan Permak -->
+    <div class="tab-pane fade" id="permak">
+      <!-- Konten sama seperti tab Semua tapi difilter untuk Permak saja -->
+    </div>
+
+    <!-- Tab Pesanan Jahit -->
+    <div class="tab-pane fade" id="jahit">
+      <!-- Konten sama seperti tab Semua tapi difilter untuk Jahit saja -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal Update Status -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Status Pesanan</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="pesananId" />
+        <div class="mb-3">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="statusPesanan">
+            <option value="pending">Menunggu Konfirmasi</option>
+            <option value="process">Dalam Proses</option>
+            <option value="ready">Siap Kirim</option>
+            <option value="completed">Selesai</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Catatan (opsional)</label>
+          <textarea class="form-control" id="catatanStatus" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Batal
+        </button>
+        <button type="button" class="btn btn-primary" onclick="saveStatus()">
+          Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('styles') %>
+<style>
+  .table > :not(caption) > * > * {
+    padding: 1rem 0.75rem;
+  }
+  .dropdown-toggle::after {
+    margin-left: 0.5em;
+  }
+</style>
+
+<%- contentFor('scripts') %>
+<script src="/js/pesanan/index.js"></script>

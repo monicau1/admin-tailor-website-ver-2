@@ -1,0 +1,390 @@
+<!-- views/pesanan/permak-form.ejs -->
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between mb-4">
+    <div>
+      <h3 class="mb-0">Tambah Pesanan Permak</h3>
+      <p class="text-muted">Isi informasi pesanan permak</p>
+    </div>
+    <div>
+      <a href="/admin/pesanan" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Kembali
+      </a>
+    </div>
+  </div>
+
+  <div id="alertContainer"></div>
+
+  <form id="permakForm">
+    <!-- Step Navigation -->
+    <div class="row mb-4">
+      <div class="col">
+        <div class="progress">
+          <div
+            class="progress-bar"
+            role="progressbar"
+            style="width: 25%"
+            id="progressBar"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1: Pelanggan -->
+    <div class="step" id="step1">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">1. Informasi Pelanggan</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-4">
+            <div class="btn-group w-100">
+              <input
+                type="radio"
+                class="btn-check"
+                name="customerType"
+                id="existingCustomer"
+                checked
+              />
+              <label class="btn btn-outline-primary" for="existingCustomer"
+                >Pelanggan Lama</label
+              >
+              <input
+                type="radio"
+                class="btn-check"
+                name="customerType"
+                id="newCustomer"
+              />
+              <label class="btn btn-outline-primary" for="newCustomer"
+                >Pelanggan Baru</label
+              >
+            </div>
+          </div>
+
+          <!-- Form Pelanggan Lama -->
+          <div id="existingCustomerForm">
+            <div class="mb-3">
+              <label class="form-label">Pilih Pelanggan</label>
+              <select class="form-select" name="id_pelanggan" required>
+                <option value="">Pilih pelanggan</option>
+                <% pelangganList.forEach(function(pelanggan) { %>
+                <option value="<%= pelanggan.id_pelanggan %>">
+                  <%= pelanggan.nama_pelanggan %> - <%=
+                  pelanggan.nomor_telepon_pelanggan %>
+                </option>
+                <% }); %>
+              </select>
+            </div>
+          </div>
+
+          <!-- Form Pelanggan Baru -->
+          <div id="newCustomerForm" class="d-none">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nama Lengkap*</label>
+                <input type="text" class="form-control" name="nama_pelanggan" />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nomor Telepon*</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  name="nomor_telepon_pelanggan"
+                />
+              </div>
+              <div class="col-12 mb-3">
+                <label class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  name="email_pelanggan"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button type="button" class="btn btn-primary" onclick="nextStep()">
+            Lanjut ke Item Permak
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Item Permak -->
+    <div class="step d-none" id="step2">
+      <div class="card">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="card-title mb-0">2. Item Permak</h5>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            onclick="addItem()"
+          >
+            <i class="fas fa-plus"></i> Tambah Item
+          </button>
+        </div>
+        <div class="card-body">
+          <div id="itemContainer">
+            <!-- Items will be added here -->
+          </div>
+          <div id="noItemMessage" class="text-center py-3 text-muted">
+            Belum ada item. Klik "Tambah Item" untuk menambahkan item permak.
+          </div>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary" onclick="prevStep()">
+            Kembali
+          </button>
+          <button type="button" class="btn btn-primary" onclick="nextStep()">
+            Lanjut ke Pengiriman
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Pengiriman -->
+    <div class="step d-none" id="step3">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">3. Informasi Pengiriman</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label class="form-label">Alamat Lengkap*</label>
+              <textarea
+                class="form-control"
+                name="alamat_jalan"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Kecamatan*</label>
+              <input
+                type="text"
+                class="form-control"
+                name="kecamatan"
+                required
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Kode Pos*</label>
+              <input
+                type="text"
+                class="form-control"
+                name="kode_pos"
+                required
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Provinsi*</label>
+              <input
+                type="text"
+                class="form-control"
+                name="provinsi"
+                required
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Jasa Pengiriman*</label>
+              <select class="form-select" name="jasa_pengiriman" required>
+                <option value="">Pilih jasa pengiriman</option>
+                <option value="jne">JNE</option>
+                <option value="jnt">J&T</option>
+                <option value="sicepat">SiCepat</option>
+                <option value="anteraja">AnterAja</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Biaya Pengiriman*</label>
+              <div class="input-group">
+                <span class="input-group-text">Rp</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="biaya_pengiriman"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary" onclick="prevStep()">
+            Kembali
+          </button>
+          <button type="button" class="btn btn-primary" onclick="nextStep()">
+            Lanjut ke Pembayaran
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Pembayaran -->
+    <div class="step d-none" id="step4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">4. Informasi Pembayaran</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Metode Pembayaran*</label>
+              <select class="form-select" name="metode_pembayaran" required>
+                <option value="">Pilih metode pembayaran</option>
+                <option value="transfer">Transfer Bank</option>
+                <option value="cash">Tunai</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Status Pembayaran*</label>
+              <select class="form-select" name="status_pembayaran" required>
+                <option value="pending">Belum Dibayar</option>
+                <option value="paid">Sudah Dibayar</option>
+              </select>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label">Bukti Pembayaran</label>
+              <input
+                type="file"
+                class="form-control"
+                name="bukti_pembayaran"
+                accept="image/*"
+              />
+              <div class="preview-container mt-2 d-none">
+                <img
+                  src=""
+                  class="img-preview img-fluid"
+                  style="max-height: 200px"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Ringkasan Biaya -->
+          <div class="card mt-4">
+            <div class="card-body">
+              <h6 class="mb-3">Ringkasan Biaya</h6>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Total Biaya Permak</span>
+                <span id="totalBiayaPermak">Rp 0</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Biaya Pengiriman</span>
+                <span id="biayaPengiriman">Rp 0</span>
+              </div>
+              <hr />
+              <div class="d-flex justify-content-between fw-bold">
+                <span>Total Pembayaran</span>
+                <span id="totalPembayaran">Rp 0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary" onclick="prevStep()">
+            Kembali
+          </button>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> Simpan Pesanan
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Template untuk item permak -->
+  <template id="itemTemplate">
+    <div class="card mb-3 item-permak">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h6 class="mb-0">Item #<span class="item-number">1</span></h6>
+        <button
+          type="button"
+          class="btn btn-outline-danger btn-sm"
+          onclick="removeItem(this)"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Kategori Permak*</label>
+            <select
+              class="form-select"
+              name="kategori_permak"
+              onchange="updateJenisPermak(this)"
+              required
+            >
+              <option value="">Pilih kategori</option>
+              <% kategoriList.forEach(function(kategori) { %>
+              <option value="<%= kategori.id_kategori_permak %>">
+                <%= kategori.nama_kategori_permak %>
+              </option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Jenis Permak*</label>
+            <select class="form-select" name="jenis_permak" required disabled>
+              <option value="">Pilih jenis permak</option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Lokasi Perbaikan*</label>
+            <input
+              type="text"
+              class="form-control"
+              name="lokasi_perbaikan"
+              required
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Deskripsi Perbaikan*</label>
+            <textarea
+              class="form-control"
+              name="deskripsi_perbaikan"
+              rows="2"
+              required
+            ></textarea>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Catatan Tambahan</label>
+            <textarea class="form-control" name="catatan" rows="2"></textarea>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Foto Item*</label>
+            <input
+              type="file"
+              class="form-control"
+              name="gambar_permak"
+              accept="image/*"
+              required
+            />
+            <div class="preview-container mt-2 d-none">
+              <img
+                src=""
+                class="img-preview img-fluid"
+                style="max-height: 200px"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="text-muted">Biaya Permak</span>
+          <span class="fw-bold harga-permak">Rp 0</span>
+        </div>
+      </div>
+    </div>
+  </template>
+</div>
+
+<%- contentFor('scripts') %>
+<script src="/js/pesanan/permak-form.js"></script>

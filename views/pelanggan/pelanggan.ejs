@@ -1,0 +1,118 @@
+<!-- views/pelanggan/pelanggan.ejs -->
+<div class="content flex-grow-1">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Daftar Pelanggan</h2>
+    <div>
+      <button class="btn btn-outline-primary me-2">Export</button>
+      <button
+        class="btn btn-primary"
+        onclick="window.location.href='/admin/pelanggan/create'"
+      >
+        + Tambah Pelanggan
+      </button>
+    </div>
+  </div>
+
+  <!-- Alert untuk notifikasi -->
+  <div id="alertContainer"></div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex justify-content-between mb-3">
+        <div class="d-flex gap-2" style="width: 300px">
+          <!-- Search Input -->
+          <div class="input-group">
+            <input
+              type="text"
+              id="searchInput"
+              class="form-control"
+              placeholder="Cari pelanggan..."
+              value="<%= query.search %>"
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              id="searchButton"
+            >
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Nama Pelanggan</th>
+              <th>Email</th>
+              <th>Nomor Telepon</th>
+              <th>Tanggal Masuk</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="pelangganTableBody">
+            <% if (pelangganList.length > 0) { %> <%
+            pelangganList.forEach((pelanggan, index) => { %>
+            <tr>
+              <td>
+                <%= (pagination.current_page - 1) * pagination.items_per_page +
+                index + 1 %>
+              </td>
+              <td><%= pelanggan.nama_pelanggan %></td>
+              <td><%= pelanggan.email_pelanggan %></td>
+              <td><%= pelanggan.nomor_telepon_pelanggan %></td>
+              <td>
+                <%= new
+                Date(pelanggan.tanggal_registrasi_pelanggan).toLocaleDateString('id-ID')
+                %>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <a
+                    href="/admin/pelanggan/<%= pelanggan.id_pelanggan %>"
+                    class="btn btn-outline-primary btn-sm"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <button
+                    class="btn btn-outline-danger btn-sm"
+                    onclick="deletePelanggan('<%= pelanggan.id_pelanggan %>')"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <% }) %> <% } else { %>
+            <tr>
+              <td colspan="6" class="text-center">Tidak ada data pelanggan</td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <nav>
+          <ul class="pagination mb-0">
+            <% for(let i=1; i<=pagination.total_pages; i++) { %>
+            <li
+              class="page-item <%= pagination.current_page === i ? 'active' : '' %>"
+            >
+              <button class="page-link" onclick="changePage('<%= i %>')">
+                <%= i %>
+              </button>
+            </li>
+            <% } %>
+          </ul>
+        </nav>
+        <div><%= pagination.total_items %> Results</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('scripts') %>
+<script src="/js/pelanggan/index.js"></script>

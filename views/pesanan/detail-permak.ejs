@@ -1,0 +1,275 @@
+<!-- views/pesanan/detail-permak.ejs -->
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <a href="/admin/pesanan" class="text-decoration-none text-secondary">
+          <i class="fas fa-arrow-left"></i> Kembali ke Daftar Pesanan
+        </a>
+        <h3 class="mt-2">Detail Pesanan #<%= pesanan.id_pesanan %></h3>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-outline-primary" onclick="printOrder()">
+          <i class="fas fa-print me-1"></i> Cetak Invoice
+        </button>
+        <button class="btn btn-primary" onclick="updateStatus()">
+          <i class="fas fa-edit me-1"></i> Update Status
+        </button>
+      </div>
+    </div>
+  
+    <div class="row">
+      <!-- Kolom Kiri - Informasi Utama -->
+      <div class="col-lg-8">
+        <!-- Status Card -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <span class="badge bg-<%= getStatusColor(pesanan.status) %> fs-6">
+                  <%= formatStatus(pesanan.status) %>
+                </span>
+                <span class="text-muted ms-2">
+                  Update terakhir: <%= formatDateTime(pesanan.updatedAt) %>
+                </span>
+              </div>
+              <div>
+                <span class="text-muted">Estimasi Selesai:</span>
+                <strong><%= formatDate(pesanan.estimasi_selesai) || 'Belum ditentukan' %></strong>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Item Permak List -->
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Daftar Item Permak</h5>
+            <span class="badge bg-primary"><%= pesanan.ItemPesanan.length %> Item</span>
+          </div>
+          <div class="list-group list-group-flush">
+            <% pesanan.ItemPesanan.forEach((item, index) => { %>
+              <div class="list-group-item p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6 class="mb-0">
+                    <span class="badge bg-secondary me-2">Item #<%= index + 1 %></span>
+                    <%= item.JenisPermak.nama_permak %>
+                  </h6>
+                  <span class="badge bg-<%= getStatusColor(item.status) %>">
+                    <%= formatStatus(item.status) %>
+                  </span>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-8">
+                    <p class="mb-1"><strong>Lokasi Perbaikan:</strong> <%= item.InstruksiKhusus.lokasi_perbaikan %></p>
+                    <p class="mb-1"><strong>Deskripsi:</strong> <%= item.InstruksiKhusus.deskripsi_perbaikan %></p>
+                    <p class="mb-0"><strong>Catatan:</strong> <%= item.InstruksiKhusus.catatan || '-' %></p>
+                  </div>
+                  <div class="col-md-4 text-end">
+                    <p class="h5 mb-0">Rp <%= formatNumber(item.harga_per_item) %></p>
+                  </div>
+                </div>
+  
+                <% if (item.gambar_permak) { %>
+                  <div class="mt-3">
+                    <img src="/images/pesanan/permak/<%= item.gambar_permak %>" 
+                         class="img-fluid rounded cursor-pointer"
+                         style="max-height: 200px"
+                         onclick="viewImage(this.src)"
+                         alt="Foto Item">
+                  </div>
+                <% } %>
+              </div>
+            <% }) %>
+          </div>
+          <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+              <span>Total Biaya Permak:</span>
+              <strong class="h5 mb-0">Rp <%= formatNumber(pesanan.jumlah_total) %></strong>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Kolom Kanan - Informasi Pendukung -->
+      <div class="col-lg-4">
+        <!-- Info Pelanggan Card -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Informasi Pelanggan</h5>
+          </div>
+          <div class="card-body">
+            <h6><%= pesanan.PelangganPesanan.nama_pelanggan %></h6>
+            <p class="mb-1">
+              <i class="fas fa-phone me-2"></i><%= pesanan.PelangganPesanan.nomor_telepon_pelanggan %>
+            </p>
+            <p class="mb-0">
+              <i class="fas fa-envelope me-2"></i><%= pesanan.PelangganPesanan.email_pelanggan %>
+            </p>
+          </div>
+        </div>
+  
+        <!-- Info Pengiriman Card -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Informasi Pengiriman</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <p class="mb-1"><strong>Alamat Pengiriman:</strong></p>
+              <p class="mb-1"><%= pesanan.Pengiriman.AlamatPengiriman.alamat_jalan %></p>
+              <p class="mb-1">
+                <%= pesanan.Pengiriman.AlamatPengiriman.kecamatan %>, 
+                <%= pesanan.Pengiriman.AlamatPengiriman.kode_pos %>
+              </p>
+              <p class="mb-0"><%= pesanan.Pengiriman.AlamatPengiriman.provinsi %></p>
+            </div>
+            <div class="mb-3">
+              <p class="mb-1"><strong>Jasa Pengiriman:</strong></p>
+              <p class="mb-0"><%= pesanan.Pengiriman.jasa_pengiriman %></p>
+            </div>
+            <div>
+              <p class="mb-1"><strong>Biaya Pengiriman:</strong></p>
+              <p class="mb-0">Rp <%= formatNumber(pesanan.Pengiriman.biaya_pengiriman) %></p>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Info Pembayaran Card -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Informasi Pembayaran</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <span class="badge bg-<%= pesanan.Pembayaran.status_pembayaran === 'paid' ? 'success' : 'warning' %>">
+                <%= formatPaymentStatus(pesanan.Pembayaran.status_pembayaran) %>
+              </span>
+            </div>
+            <div class="mb-3">
+              <p class="mb-1"><strong>Metode Pembayaran:</strong></p>
+              <p class="mb-0"><%= pesanan.Pembayaran.metode_pembayaran %></p>
+            </div>
+            <div class="mb-3">
+              <p class="mb-1"><strong>Total Pembayaran:</strong></p>
+              <p class="mb-0">Rp <%= formatNumber(pesanan.Pembayaran.jumlah_dibayar) %></p>
+            </div>
+            <% if (pesanan.Pembayaran.bukti_pembayaran) { %>
+              <div>
+                <p class="mb-2"><strong>Bukti Pembayaran:</strong></p>
+                <img 
+                  src="/images/pesanan/pembayaran/<%= pesanan.Pembayaran.bukti_pembayaran %>" 
+                  class="img-fluid rounded cursor-pointer"
+                  onclick="viewImage(this.src)"
+                  alt="Bukti Pembayaran"
+                >
+              </div>
+            <% } %>
+          </div>
+        </div>
+  
+        <!-- Riwayat Status Card -->
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Riwayat Status</h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+              <% pesanan.RiwayatStatusPesanan.sort((a, b) => new Date(b.tanggal_status) - new Date(a.tanggal_status))
+                .forEach(riwayat => { %>
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-<%= getStatusColor(riwayat.StatusRiwayat.nama_status) %>">
+                      <%= formatStatus(riwayat.StatusRiwayat.nama_status) %>
+                    </span>
+                    <small class="text-muted"><%= formatDateTime(riwayat.tanggal_status) %></small>
+                  </div>
+                  <% if (riwayat.keterangan) { %>
+                    <p class="mb-0 mt-2 text-muted"><%= riwayat.keterangan %></p>
+                  <% } %>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Update Status -->
+  <div class="modal fade" id="updateStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update Status Pesanan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="updateStatusForm">
+            <input type="hidden" name="pesananId" value="<%= pesanan.id_pesanan %>">
+            <div class="mb-3">
+              <label class="form-label">Status</label>
+              <select class="form-select" name="status" required>
+                <% const statusList = [
+                    { value: 1, label: 'Menunggu Konfirmasi' },
+                    { value: 2, label: 'Dalam Proses' },
+                    { value: 3, label: 'Siap Kirim' },
+                    { value: 4, label: 'Selesai' }
+                ] %>
+                <% statusList.forEach(item => { %>
+                    <option value="<%= item.value %>" <%= pesanan.id_status === item.value ? 'selected' : '' %>>
+                    <%= item.label %>
+                    </option>
+                <% }) %>
+                </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Estimasi Selesai</label>
+              <input type="date" class="form-control" name="estimasi_selesai" 
+                     value="<%= pesanan.estimasi_selesai ? formatDateValue(pesanan.estimasi_selesai) : '' %>">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Catatan (Opsional)</label>
+              <textarea class="form-control" name="catatan" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-primary" onclick="saveStatus()">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Preview Image -->
+  <div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Preview Gambar</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-0">
+          <img src="" class="img-fluid" id="previewImage" alt="Preview">
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <%- contentFor('styles') %>
+  <style>
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  .list-group-item {
+    transition: background-color 0.2s;
+  }
+  .list-group-item:hover {
+    background-color: #f8f9fa;
+  }
+  </style>
+  
+  <%- contentFor('scripts') %>
+  <script src="/js/pesanan/detail-permak.js"></script>

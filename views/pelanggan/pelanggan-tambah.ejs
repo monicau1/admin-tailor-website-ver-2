@@ -1,0 +1,156 @@
+<!-- views/pelanggan/pelanggan-tambah.ejs -->
+<div class="content flex-grow-1">
+  <div class="container">
+    <div class="header mb-4">
+      <a href="/admin/pelanggan" class="text-decoration-none">
+        <i class="fas fa-arrow-left"></i> Kembali ke Daftar Pelanggan
+      </a>
+      <h1 class="mt-2">Tambah Pelanggan Baru</h1>
+    </div>
+
+    <!-- Tambahkan ini -->
+    <div id="alertContainer"></div>
+
+    <!-- Form informasi pelanggan -->
+    <form id="pelangganForm" class="card">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="namaPelanggan" class="form-label"
+              >Nama Pelanggan*</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="namaPelanggan"
+              name="nama_pelanggan"
+              required
+              minlength="3"
+              maxlength="100"
+            />
+            <div class="invalid-feedback">
+              Nama pelanggan harus diisi (3-100 karakter)
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="emailPelanggan" class="form-label">Email*</label>
+            <input
+              type="email"
+              class="form-control"
+              id="emailPelanggan"
+              name="email_pelanggan"
+              required
+              pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            />
+            <div class="invalid-feedback" id="emailFeedback">
+              Format email tidak valid atau email sudah terdaftar
+            </div>
+            <div
+              class="spinner-border spinner-border-sm text-primary d-none"
+              id="emailCheckSpinner"
+              role="status"
+            >
+              <span class="visually-hidden">Memeriksa email...</span>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="password" class="form-label">Password*</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password_pelanggan"
+              required
+              minlength="6"
+            />
+            <div class="invalid-feedback">Password minimal 6 karakter</div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="nomorTelepon" class="form-label">Nomor Telepon*</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="nomorTelepon"
+              name="nomor_telepon_pelanggan"
+              required
+              pattern="^[0-9+\-\s()]*$"
+              minlength="10"
+              maxlength="15"
+            />
+            <div class="invalid-feedback">
+              Nomor telepon harus valid (10-15 digit)
+            </div>
+          </div>
+
+          <!-- Alamat -->
+          <div class="col-12">
+            <hr />
+            <h5>Alamat</h5>
+          </div>
+
+          <div class="col-12">
+            <label for="alamatJalan" class="form-label">Alamat Jalan*</label>
+            <textarea
+              class="form-control"
+              id="alamatJalan"
+              name="alamat_jalan"
+              rows="2"
+              required
+            ></textarea>
+          </div>
+
+          <div class="col-md-6">
+            <label for="kecamatan" class="form-label">Kecamatan*</label>
+            <input
+              type="text"
+              class="form-control"
+              id="kecamatan"
+              name="kecamatan"
+              required
+            />
+          </div>
+
+          <div class="col-md-6">
+            <label for="provinsi" class="form-label">Provinsi*</label>
+            <input
+              type="text"
+              class="form-control"
+              id="provinsi"
+              name="provinsi"
+              required
+            />
+          </div>
+
+          <div class="col-md-6">
+            <label for="kodePos" class="form-label">Kode Pos*</label>
+            <input
+              type="text"
+              class="form-control"
+              id="kodePos"
+              name="kode_pos"
+              required
+              pattern="[0-9]{5}"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <div class="d-flex justify-content-end gap-2">
+          <a href="/admin/pelanggan" class="btn btn-secondary">
+            <i class="fas fa-times me-1"></i> Batal
+          </a>
+          <button type="submit" class="btn btn-primary" id="submitButton">
+            <i class="fas fa-save me-1"></i> Simpan
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- contentFor('scripts') %>
+<script src="/js/pelanggan/create.js"></script>

@@ -1,0 +1,324 @@
+<!-- views/pesanan/pakaian-form.ejs -->
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between mb-4">
+    <div>
+      <h3 class="mb-0">Tambah Pesanan Pakaian</h3>
+      <p class="text-muted">Isi informasi pesanan pakaian</p>
+    </div>
+    <div>
+      <a href="/admin/pesanan" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Kembali
+      </a>
+    </div>
+  </div>
+
+  <div id="alertContainer"></div>
+
+  <!-- Form Utama -->
+  <form id="pakaianForm">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title mb-0">1. Informasi Pelanggan</h5>
+      </div>
+      <div class="card-body">
+        <!-- Radio Button Pilih Tipe Pelanggan -->
+        <div class="btn-group w-100 mb-4">
+          <input
+            type="radio"
+            class="btn-check"
+            name="customerType"
+            id="existingCustomer"
+            checked
+          />
+          <label class="btn btn-outline-primary" for="existingCustomer"
+            >Pelanggan Lama</label
+          >
+
+          <input
+            type="radio"
+            class="btn-check"
+            name="customerType"
+            id="newCustomer"
+          />
+          <label class="btn btn-outline-primary" for="newCustomer"
+            >Pelanggan Baru</label
+          >
+        </div>
+
+        <!-- Form Pelanggan Lama -->
+        <div id="existingCustomerForm">
+          <div class="mb-3">
+            <label class="form-label">Pilih Pelanggan</label>
+            <select class="form-select" name="id_pelanggan" required>
+              <option value="">Pilih pelanggan</option>
+              <% pelangganList.forEach(function(pelanggan) { %>
+              <option value="<%= pelanggan.id_pelanggan %>">
+                <%= pelanggan.nama_pelanggan %> - <%=
+                pelanggan.nomor_telepon_pelanggan %>
+              </option>
+              <% }); %>
+            </select>
+          </div>
+        </div>
+
+        <!-- Form Pelanggan Baru -->
+        <div id="newCustomerForm" class="d-none">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Nama Pelanggan*</label>
+              <input type="text" class="form-control" name="nama_pelanggan" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Email*</label>
+              <input type="email" class="form-control" name="email_pelanggan" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Password*</label>
+              <input
+                type="password"
+                class="form-control"
+                name="password_pelanggan"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Nomor Telepon*</label>
+              <input
+                type="tel"
+                class="form-control"
+                name="nomor_telepon_pelanggan"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informasi Item Pesanan -->
+    <div class="card mb-4">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h5 class="card-title mb-0">2. Item Pesanan</h5>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          onclick="addItem()"
+        >
+          <i class="fas fa-plus"></i> Tambah Item
+        </button>
+      </div>
+
+      <div class="card-body">
+        <div id="itemContainer">
+          <!-- Item pesanan akan ditambahkan di sini -->
+        </div>
+        <div id="noItemMessage" class="text-center py-3 text-muted">
+          Belum ada item. Klik "Tambah Item" untuk menambahkan pakaian.
+        </div>
+      </div>
+    </div>
+
+    <!-- Informasi Pengiriman -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title mb-0">3. Informasi Pengiriman</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12 mb-3">
+            <label class="form-label">Alamat Lengkap*</label>
+            <textarea
+              class="form-control"
+              name="alamat_jalan"
+              rows="3"
+              required
+            ></textarea>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Kecamatan*</label>
+            <input type="text" class="form-control" name="kecamatan" required />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Provinsi*</label>
+            <input type="text" class="form-control" name="provinsi" required />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Kode Pos*</label>
+            <input
+              type="text"
+              class="form-control"
+              name="kode_pos"
+              required
+              pattern="[0-9]{5}"
+            />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Jasa Pengiriman*</label>
+            <select class="form-select" name="jasa_pengiriman" required>
+              <option value="">Pilih jasa pengiriman</option>
+              <option value="jne">JNE</option>
+              <option value="jnt">J&T</option>
+              <option value="sicepat">SiCepat</option>
+              <option value="anteraja">AnterAja</option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Biaya Pengiriman*</label>
+            <div class="input-group">
+              <span class="input-group-text">Rp</span>
+              <input
+                type="number"
+                class="form-control"
+                name="biaya_pengiriman"
+                required
+                min="0"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pembayaran -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="card-title mb-0">4. Informasi Pembayaran</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Metode Pembayaran*</label>
+            <select class="form-select" name="metode_pembayaran" required>
+              <option value="">Pilih metode pembayaran</option>
+              <option value="transfer">Transfer Bank</option>
+              <option value="cash">Tunai</option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Status Pembayaran*</label>
+            <select class="form-select" name="status_pembayaran" required>
+              <option value="pending">Belum Dibayar</option>
+              <option value="paid">Sudah Dibayar</option>
+            </select>
+          </div>
+
+          <div class="col-12 mb-3">
+            <label class="form-label">Bukti Pembayaran</label>
+            <input
+              type="file"
+              class="form-control"
+              name="bukti_pembayaran"
+              accept="image/*"
+            />
+            <small class="text-muted"
+              >Upload bukti jika status pembayaran "Sudah Dibayar"</small
+            >
+          </div>
+        </div>
+
+        <!-- Ringkasan Biaya -->
+        <div class="card mt-4">
+          <div class="card-body">
+            <h6>Ringkasan Biaya</h6>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Total Biaya Pakaian</span>
+              <span id="totalBiayaPakaian">Rp 0</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Biaya Pengiriman</span>
+              <span id="biayaPengiriman">Rp 0</span>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-between fw-bold">
+              <span>Total Pembayaran</span>
+              <span id="totalPembayaran">Rp 0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <div class="d-flex justify-content-end gap-2">
+          <a href="/admin/pesanan" class="btn btn-secondary">
+            <i class="fas fa-times"></i> Batal
+          </a>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Simpan Pesanan
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Template untuk item pesanan -->
+  <template id="itemTemplate">
+    <div class="card mb-3 item-pakaian">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h6 class="mb-0">Item #<span class="item-number">1</span></h6>
+        <button
+          type="button"
+          class="btn btn-outline-danger btn-sm"
+          onclick="removeItem(this)"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Model Pakaian*</label>
+            <select
+              class="form-select"
+              name="id_pakaian"
+              onchange="updateVarianPakaian(this)"
+              required
+            >
+              <option value="">Pilih model pakaian</option>
+              <% pakaianList.forEach(function(pakaian) { %>
+              <option value="<%= pakaian.id_pakaian %>">
+                <%= pakaian.nama_pakaian %> - Rp <%= formatNumber(pakaian.harga)
+                %>
+              </option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Varian (Ukuran & Warna)*</label>
+            <select
+              class="form-select"
+              name="id_varian_pakaian"
+              required
+              disabled
+            >
+              <option value="">Pilih varian</option>
+            </select>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Jumlah*</label>
+            <input
+              type="number"
+              class="form-control"
+              name="kuantitas"
+              min="1"
+              value="1"
+              required
+            />
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="text-muted">Subtotal</span>
+          <span class="fw-bold harga-item">Rp 0</span>
+        </div>
+      </div>
+    </div>
+  </template>
+</div>
+
+<%- contentFor('scripts') %>
+<script src="/js/pesanan/pakaian-form.js"></script>

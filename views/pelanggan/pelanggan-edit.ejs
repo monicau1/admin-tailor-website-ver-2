@@ -1,0 +1,384 @@
+<!-- views/pelanggan/pelanggan-edit.ejs -->
+<div class="content flex-grow-1">
+  <div class="container">
+    <div class="header mb-4">
+      <a href="/admin/pelanggan" class="text-decoration-none">
+        <i class="fas fa-arrow-left"></i> Kembali ke Daftar Pelanggan
+      </a>
+      <h1 class="mt-2">
+        <%= isEditing ? 'Edit Pelanggan' : 'Detail Pelanggan' %>
+      </h1>
+    </div>
+
+    <!-- Alert untuk notifikasi -->
+    <div id="alertContainer">
+      <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= error %>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      <% } %>
+    </div>
+
+    <div class="row">
+      <!-- Informasi Pelanggan -->
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div
+            class="card-header d-flex justify-content-between align-items-center"
+          >
+            <h5 class="card-title mb-0">Informasi Pelanggan</h5>
+          </div>
+          <div class="card-body">
+            <form id="pelangganForm">
+              <div class="mb-3">
+                <label for="namaPelanggan" class="form-label fw-bold"
+                  >Nama Pelanggan</label
+                >
+                <% if (isEditing) { %>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="namaPelanggan"
+                  name="nama_pelanggan"
+                  value="<%= pelanggan.nama_pelanggan %>"
+                  required
+                  minlength="3"
+                  maxlength="100"
+                />
+                <div class="invalid-feedback">
+                  Nama pelanggan harus diisi (3-100 karakter)
+                </div>
+                <% } else { %>
+                <p class="mb-0"><%= pelanggan.nama_pelanggan %></p>
+                <% } %>
+              </div>
+
+              <div class="mb-3">
+                <label for="emailPelanggan" class="form-label fw-bold"
+                  >Email</label
+                >
+                <% if (isEditing) { %>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="emailPelanggan"
+                  name="email_pelanggan"
+                  value="<%= pelanggan.email_pelanggan %>"
+                  pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                  required
+                />
+                <div class="invalid-feedback">
+                  Format email tidak valid. Contoh: nama@domain.com
+                </div>
+                <% } else { %>
+                <p class="mb-0"><%= pelanggan.email_pelanggan %></p>
+                <% } %>
+              </div>
+
+              <div class="mb-3">
+                <label for="nomorTelepon" class="form-label fw-bold"
+                  >Nomor Telepon</label
+                >
+                <% if (isEditing) { %>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="nomorTelepon"
+                  name="nomor_telepon_pelanggan"
+                  value="<%= pelanggan.nomor_telepon_pelanggan %>"
+                  required
+                  pattern="^[0-9+\-\s()]*$"
+                  minlength="10"
+                  maxlength="15"
+                />
+                <div class="invalid-feedback">
+                  Nomor telepon harus valid (10-15 digit)
+                </div>
+                <% } else { %>
+                <p class="mb-0"><%= pelanggan.nomor_telepon_pelanggan %></p>
+                <% } %>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-bold">Tanggal Registrasi</label>
+                <p class="mb-0">
+                  <%= new
+                  Date(pelanggan.tanggal_registrasi_pelanggan).toLocaleDateString('id-ID',
+                  { weekday: 'long', year: 'numeric', month: 'long', day:
+                  'numeric' }) %>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informasi Alamat -->
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div
+            class="card-header d-flex justify-content-between align-items-center"
+          >
+            <h5 class="card-title mb-0">Alamat Pelanggan</h5>
+            <% if (isEditing) { %>
+            <button
+              type="button"
+              class="btn btn-sm btn-primary"
+              onclick="addNewAddress()"
+            >
+              <i class="fas fa-plus"></i> Tambah Alamat
+            </button>
+            <% } %>
+          </div>
+          <div class="card-body" id="alamatContainer">
+            <% if (alamat && alamat.length > 0) { %> <% alamat.forEach((item,
+            index) => { %>
+            <div
+              class="alamat-item mb-4"
+              id="alamat-<%= item.id_alamat_pelanggan %>"
+            >
+              <div
+                class="d-flex justify-content-between align-items-center mb-2"
+              >
+                <h6 class="mb-0">Alamat <%= index + 1 %></h6>
+                <% if (isEditing) { %>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-danger"
+                  onclick="removeAddress('<%= item.id_alamat_pelanggan %>')"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+                <% } %>
+              </div>
+
+              <form
+                class="alamat-form"
+                id="alamatForm-<%= item.id_alamat_pelanggan %>"
+              >
+                <input
+                  type="hidden"
+                  name="id_alamat_pelanggan"
+                  value="<%= item.id_alamat_pelanggan %>"
+                />
+
+                <div class="mb-2">
+                  <label class="form-label fw-bold">Alamat Lengkap</label>
+                  <% if (isEditing) { %>
+                  <textarea class="form-control" name="alamat_jalan" required>
+<%= item.alamat_jalan %></textarea
+                  >
+                  <% } else { %>
+                  <p class="mb-0"><%= item.alamat_jalan %></p>
+                  <% } %>
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label fw-bold">Kecamatan</label>
+                  <% if (isEditing) { %>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="kecamatan"
+                    value="<%= item.kecamatan %>"
+                    required
+                  />
+                  <% } else { %>
+                  <p class="mb-0"><%= item.kecamatan %></p>
+                  <% } %>
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label fw-bold">Provinsi</label>
+                  <% if (isEditing) { %>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="provinsi"
+                    value="<%= item.provinsi %>"
+                    required
+                  />
+                  <% } else { %>
+                  <p class="mb-0"><%= item.provinsi %></p>
+                  <% } %>
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label fw-bold">Kode Pos</label>
+                  <% if (isEditing) { %>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="kode_pos"
+                    value="<%= item.kode_pos %>"
+                    required
+                    pattern="[0-9]{5}"
+                  />
+                  <% } else { %>
+                  <p class="mb-0"><%= item.kode_pos %></p>
+                  <% } %>
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label fw-bold">Negara</label>
+                  <% if (isEditing) { %>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="negara"
+                    value="<%= item.negara %>"
+                    required
+                  />
+                  <% } else { %>
+                  <p class="mb-0"><%= item.negara %></p>
+                  <% } %>
+                </div>
+              </form>
+            </div>
+            <% if (index < alamat.length - 1) { %>
+            <hr />
+            <% } %> <% }); %> <% } else { %>
+            <p class="text-muted mb-0" id="noAddressMessage">
+              Belum ada alamat yang terdaftar
+            </p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Template untuk alamat baru -->
+    <template id="newAddressTemplate">
+      <div class="alamat-item mb-4" id="alamat-new-{INDEX}">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0">Alamat Baru</h6>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-danger"
+            onclick="removeNewAddress('{INDEX}')"
+          >
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <form class="alamat-form" id="alamatForm-new-{INDEX}">
+          <div class="mb-2">
+            <label class="form-label fw-bold">Alamat Lengkap</label>
+            <textarea
+              class="form-control"
+              name="alamat_jalan"
+              required
+            ></textarea>
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-bold">Kecamatan</label>
+            <input type="text" class="form-control" name="kecamatan" required />
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-bold">Provinsi</label>
+            <input type="text" class="form-control" name="provinsi" required />
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-bold">Kode Pos</label>
+            <input
+              type="text"
+              class="form-control"
+              name="kode_pos"
+              required
+              pattern="[0-9]{5}"
+            />
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-bold">Negara</label>
+            <input
+              type="text"
+              class="form-control"
+              name="negara"
+              value="Indonesia"
+              required
+            />
+          </div>
+        </form>
+      </div>
+    </template>
+
+    <!-- Footer -->
+    <div class="card mb-4">
+      <div class="card-footer">
+        <div class="d-flex justify-content-between">
+          <button
+            type="button"
+            class="btn btn-danger"
+            onclick="deletePelanggan()"
+            id="deleteButton"
+          >
+            <i class="fas fa-trash me-1"></i> Hapus
+          </button>
+          <div class="d-flex gap-2">
+            <% if (isEditing) { %>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="cancelEdit()"
+            >
+              <i class="fas fa-times me-1"></i> Batal
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="savePelanggan()"
+            >
+              <i class="fas fa-save me-1"></i> Simpan
+            </button>
+            <% } else { %>
+            <a href="/admin/pelanggan" class="btn btn-secondary">
+              <i class="fas fa-arrow-left me-1"></i> Kembali
+            </a>
+            <button type="button" class="btn btn-primary" onclick="startEdit()">
+              <i class="fas fa-edit me-1"></i> Edit
+            </button>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Konfirmasi Hapus</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>Apakah Anda yakin ingin menghapus data pelanggan ini?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Batal
+        </button>
+        <button type="button" class="btn btn-danger" id="confirmDelete">
+          Hapus
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('scripts') %>
+<script>
+  const PELANGGAN_ID = "<%= pelanggan.id_pelanggan %>";
+</script>
+<script src="/js/pelanggan/edit.js"></script>

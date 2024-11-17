@@ -1,0 +1,84 @@
+<!-- views/pegawai/pegawai-tambah.ejs -->
+<div class="content flex-grow-1">
+  <div class="container">
+    <div class="header mb-4">
+      <a href="/admin/pegawai" class="text-decoration-none">
+        <i class="fas fa-arrow-left"></i> Kembali ke Daftar Pegawai
+      </a>
+      <h1 class="mt-2">Tambah Pegawai Baru</h1>
+    </div>
+
+    <!-- Form informasi pegawai -->
+    <form id="pegawaiForm" class="card">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="namaPegawai" class="form-label">Nama Pegawai*</label>
+            <input
+              type="text"
+              class="form-control"
+              id="namaPegawai"
+              name="nama_pegawai"
+              required
+            />
+          </div>
+
+          <div class="col-md-6">
+            <label for="emailPegawai" class="form-label">Email*</label>
+            <input
+              type="email"
+              class="form-control"
+              id="emailPegawai"
+              name="email_pegawai"
+              required
+            />
+          </div>
+
+          <div class="col-md-6">
+            <label for="passwordPegawai" class="form-label">Password*</label>
+            <input
+              type="password"
+              class="form-control"
+              id="passwordPegawai"
+              name="password_pegawai"
+              required
+              minlength="6"
+            />
+            <div class="invalid-feedback">Password minimal 6 karakter</div>
+          </div>
+          <div class="col-md-6">
+            <label for="nomorTelepon" class="form-label">Nomor Telepon*</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="nomorTelepon"
+              name="nomor_telepon_pegawai"
+              required
+            />
+          </div>
+
+          <div class="col-md-6">
+            <label for="tanggalMasuk" class="form-label">Tanggal Masuk*</label>
+            <input
+              type="date"
+              class="form-control"
+              id="tanggalMasuk"
+              name="tanggal_masuk_pegawai"
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <div class="d-flex justify-content-end gap-2">
+          <a href="/admin/pegawai" class="btn btn-secondary">Batal</a>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- contentFor('scripts') %>
+<script src="/js/pegawai/create.js"></script>

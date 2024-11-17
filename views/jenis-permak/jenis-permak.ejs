@@ -1,0 +1,147 @@
+<!-- views/jenis-permak/jenis-permak.ejs -->
+<div class="content flex-grow-1">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Layanan Permak</h2>
+    <div>
+      <button class="btn btn-primary" onclick="showAddLayananModal()">
+        + Tambah Layanan
+      </button>
+    </div>
+  </div>
+
+  <!-- Alert untuk notifikasi -->
+  <div id="alertContainer"></div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex justify-content-between mb-3">
+        <!-- Filter dan Search -->
+        <div class="d-flex gap-2" style="width: 600px">
+          <!-- Filter Status -->
+          <select id="statusFilter" class="form-select" style="width: 150px">
+            <option value="">Semua Status</option>
+            <option value="active">Aktif</option>
+            <option value="inactive">Nonaktif</option>
+          </select>
+
+          <!-- Filter Kategori -->
+          <select id="kategoriFilter" class="form-select" style="width: 200px">
+            <option value="">Semua Kategori</option>
+            <!-- Kategori akan diisi melalui JavaScript -->
+          </select>
+
+          <!-- Search Input -->
+          <div class="input-group">
+            <input
+              type="text"
+              id="searchInput"
+              class="form-control"
+              placeholder="Cari layanan..."
+            />
+            <button class="btn btn-outline-secondary" type="button">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabel Layanan -->
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th width="5%">No</th>
+              <th width="35%">Nama Layanan</th>
+              <th width="25%">Kategori</th>
+              <th width="15%">Harga</th>
+              <th width="10%">Status</th>
+              <th width="10%">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="layananTableBody">
+            <!-- Data akan diisi melalui JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <nav>
+          <ul class="pagination mb-0" id="pagination">
+            <!-- Pagination akan diisi melalui JavaScript -->
+          </ul>
+        </nav>
+        <div id="totalItem">0 Hasil</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah/Edit Layanan -->
+<div class="modal fade" id="layananModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Tambah Layanan Permak</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="layananForm">
+          <input type="hidden" id="layananId" />
+          <div class="mb-3">
+            <label for="namaLayanan" class="form-label">Nama Layanan*</label>
+            <input type="text" class="form-control" id="namaLayanan" required />
+          </div>
+          <div class="mb-3">
+            <label for="kategoriLayanan" class="form-label">Kategori*</label>
+            <select class="form-select" id="kategoriLayanan" required>
+              <option value="" disabled selected>Pilih Kategori</option>
+              <!-- Kategori akan diisi melalui JavaScript -->
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="hargaLayanan" class="form-label">Harga (Rp)*</label>
+            <input
+              type="number"
+              class="form-control"
+              id="hargaLayanan"
+              min="0"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="deskripsiLayanan" class="form-label">Deskripsi</label>
+            <textarea
+              class="form-control"
+              id="deskripsiLayanan"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="statusLayanan" class="form-label">Status</label>
+            <select class="form-select" id="statusLayanan">
+              <option value="active">Aktif</option>
+              <option value="inactive">Nonaktif</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Batal
+        </button>
+        <button type="button" class="btn btn-primary" onclick="saveLayanan()">
+          Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Include script -->
+<%- contentFor('scripts') %>
+<script src="/js/jenis-permak/index.js"></script>
